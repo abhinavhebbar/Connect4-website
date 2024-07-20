@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Players</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1565c0; /* Light gray background */
+      color: #fff; /* Dark gray text color */
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      background-color: #fff; /* White background */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+    }
+
+    form h2 {
+      color: #000000;
+      margin-top: 20px;
+    }
+
+    div {
+      margin-bottom: 10px;
+    }
+
+    input[type="radio"],
+    input[type="text"],
+    select {
+      margin-right: 5px;
+    }
+
+    input[type="radio"]:checked + label {
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc; /* Light gray border */
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    button[type="submit"]{
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff; /* Blue button */
+      color: #fff; /* White text */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    a {
+      width: 90%;
+      padding: 10px;
+      background-color: #007bff; /* Blue button */
+      color: #fff; /* White text */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-decoration: none; /* Remove underline from the link */
+      display: inline-block; /* Adjust for the link */
+      text-align: center; /* Center the text */
+    }
+
+    button[type="submit"]:hover,
+    a:hover {
+      background-color: #0056b3; /* Darker blue on hover */
+    }
+    label {
+      color: black; /* Set label color to black */
+    }
+    .error-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #f44336;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      z-index: 9999;
+  }
+  </style>
+  
+   
+</head>
+
+<body>
+
+<h1>Register Players</h1>
+
+<form method="post">
+  {% csrf_token %}
+
+  <h2>Player 1</h2>
+  <div>
+    <input type="radio" id="player1_registered" name="player1_type" value="registered" checked>
+    <label for="player1_registered">Registered Player</label>
+  </div>
+  <div id="player1_registered_options">
+    <select name="player1_username">
+      <option value="" selected>Select Registered Player</option>
+      {% for player in existing_players %}
+        <option value="{{ player.username }}">{{ player.username }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <input type="radio" id="player1_new" name="player1_type" value="new">
+    <label for="player1_new">New Player</label>
+  </div>
+  <div id="player1_new_options">
+    <input type="text" id="player1_new_username" name="player1_new_username" placeholder="Enter Username" >
+  </div>
+
+  <h2>Player 2</h2>
+  <div>
+    <input type="radio" id="player2_registered" name="player2_type" value="registered" checked>
+    <label for="player2_registered">Registered Player</label>
+  </div>
+  <div id="player2_registered_options">
+  <select name="player2_username">
+    <option value="" selected>Select Registered Player</option>
+    {% for player in existing_players %}
+      <option value="{{ player.username }}">{{ player.username }}</option>
+    {% endfor %}
+  </select>
+  </div>
+  <div>
+    <input type="radio" id="player2_new" name="player2_type" value="new">
+    <label for="player2_new">New Player</label>
+  </div>
+  <div id="player2_new_options">
+    <input type="text" id="player2_new_username" name="player2_new_username" placeholder="Enter Username">
+  </div>
+
+  <button type="submit">Start Game</button><br><br>
+  <a href="{% url 'landing_page' %}">Home Screen</a>
+</form>
+
+<script>
+  function showNotification(message) {
+    // Create a notification element
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.classList.add('error-notification');
+    document.body.appendChild(notification);
+
+    // Hide the notification after 5 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 5000);
+  }
+
+  function handleResponse(response) {
+    if (response.error) {
+      showNotification(response.error);
+    }
+      else {
+        window.location.href = response.redirect_url;
+    }
+  }
+  const player1RegisteredRadio = document.getElementById('player1_registered');
+  const player1NewRadio = document.getElementById('player1_new');
+  const player1RegisteredOptions = document.getElementById('player1_registered_options');
+  const player1NewOptions = document.getElementById('player1_new_options');
+
+  const player2RegisteredRadio = document.getElementById('player2_registered');
+  const player2NewRadio = document.getElementById('player2_new');
+  const player2RegisteredOptions = document.getElementById('player2_registered_options');
+  const player2NewOptions = document.getElementById('player2_new_options');
+
+  player1RegisteredRadio.addEventListener('change', () => {
+    if (player1RegisteredRadio.checked) {
+      player1RegisteredOptions.style.display = 'block';
+      player1NewOptions.style.display = 'none';
+    }
+  });
+
+  player1NewRadio.addEventListener('change', () => {
+    if (player1NewRadio.checked) {
+      player1RegisteredOptions.style.display = 'none';
+      player1NewOptions.style.display = 'block';
+    }
+  });
+
+  player2RegisteredRadio.addEventListener('change', () => {
+    if (player2RegisteredRadio.checked) {
+      player2RegisteredOptions.style.display = 'block';
+      player2NewOptions.style.display = 'none';
+    }
+  });
+
+  player2NewRadio.addEventListener('change', () => {
+    if (player2NewRadio.checked) {
+      player2RegisteredOptions.style.display = 'none';
+      player2NewOptions.style.display = 'block';
+    }
+  });
+  document.querySelector('form[method="post"]').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    })
+    .then(response => response.json())
+    .then(response => {
+      handleResponse(response);
+    })
+    .catch(error => console.error('Error:', error));
+  });
+</script>
+
+
+</body>
+</html>

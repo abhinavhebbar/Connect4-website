@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect Four</title>
+<style>
+    body {
+        background-color: #1565c0; /* Dark blue from Connect 4 palette */
+        color: white; /* White text color */
+        font-family: Arial, sans-serif; /* Sans-serif font */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    #status {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    table {
+        border-collapse: collapse;
+    }
+
+    td {
+        width: 50px;
+        height: 50px;
+        border: 1px solid #2196f3;;
+        background-color: #0F3AB6;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    button {
+        width: 100%;
+        height: 100%;
+        font-size: 20px;
+        background-color: #0F3AB6;
+        border: none;
+        color: transparent;
+        
+    }
+
+    .modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #2196f3; /* Light blue from Connect 4 palette */
+        border: 2px solid #64b5f6; /* Lighter blue border */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin-top: 100px;
+        width: 300px; /* Set the width of the modal */
+      }
+    
+
+    .modal-content {
+        margin: 0 auto;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    input[type="radio"] {
+        margin-right: 5px;
+    }
+
+    input[type="submit"],
+    a {
+        display: block;
+        width: 90%;
+        padding: 10px;
+        background-color: #f44336; /* Red from Connect 4 palette */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        text-decoration: none; /* Added to remove underline from the link */
+        text-align: center; /* Added to center the text in the link */
+    }
+
+    input[type="submit"]:hover,
+    a:hover {
+        background-color: #b71c1c; /* Darker red on hover */
+    }
+
+    .success-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        z-index: 9999;
+    }
+
+    .error-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #f44336;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        z-index: 9999;
+    }
+</style>
+
+</head>
+<body>
+
+    <div id="status" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+        <a href="{% url 'landing_page' %}">Home Screen</a>
+        <p id="UsernameS">{{ player1.username }} : Player 1 :Red<br><br>
+            {{ player2.username }} : Player 2 : Yellow</p>
+        <p id="turn">{{ current_player.username }}'s Turn</p>
+        <p id="gameStatus">Game ongoing</p>
+    </div>
+
+<table id="connectFourGrid">
+    <tr>
+        <td><button onclick="dropPiece(this,0)">Drop</button></td>
+        <td><button onclick="dropPiece(this,1)">Drop</button></td>
+        <td><button onclick="dropPiece(this,2)">Drop</button></td>
+        <td><button onclick="dropPiece(this,3)">Drop</button></td>
+        <td><button onclick="dropPiece(this,4)">Drop</button></td>
+        <td><button onclick="dropPiece(this,5)">Drop</button></td>
+        <td><button onclick="dropPiece(this,6)">Drop</button></td>
+    </tr>
+    <tr>
+        <td><button onclick="dropPiece(this,0)">Drop</button></td>
+        <td><button onclick="dropPiece(this,1)">Drop</button></td>
+        <td><button onclick="dropPiece(this,2)">Drop</button></td>
+        <td><button onclick="dropPiece(this,3)">Drop</button></td>
+        <td><button onclick="dropPiece(this,4)">Drop</button></td>
+        <td><button onclick="dropPiece(this,5)">Drop</button></td>
+        <td><button onclick="dropPiece(this,6)">Drop</button></td>
+    </tr>
+    <tr>
+        <td><button onclick="dropPiece(this,0)">Drop</button></td>
+        <td><button onclick="dropPiece(this,1)">Drop</button></td>
+        <td><button onclick="dropPiece(this,2)">Drop</button></td>
+        <td><button onclick="dropPiece(this,3)">Drop</button></td>
+        <td><button onclick="dropPiece(this,4)">Drop</button></td>
+        <td><button onclick="dropPiece(this,5)">Drop</button></td>
+        <td><button onclick="dropPiece(this,6)">Drop</button></td>
+    </tr>
+    <tr>
+        <td><button onclick="dropPiece(this,0)">Drop</button></td>
+        <td><button onclick="dropPiece(this,1)">Drop</button></td>
+        <td><button onclick="dropPiece(this,2)">Drop</button></td>
+        <td><button onclick="dropPiece(this,3)">Drop</button></td>
+        <td><button onclick="dropPiece(this,4)">Drop</button></td>
+        <td><button onclick="dropPiece(this,5)">Drop</button></td>
+        <td><button onclick="dropPiece(this,6)">Drop</button></td>
+    </tr>
+    <tr>
+        <td><button onclick="dropPiece(this,0)">Drop</button></td>
+        <td><button onclick="dropPiece(this,1)">Drop</button></td>
+        <td><button onclick="dropPiece(this,2)">Drop</button></td>
+        <td><button onclick="dropPiece(this,3)">Drop</button></td>
+        <td><button onclick="dropPiece(this,4)">Drop</button></td>
+        <td><button onclick="dropPiece(this,5)">Drop</button></td>
+        <td><button onclick="dropPiece(this,6)">Drop</button></td>
+    </tr>
+    <tr>
+        <td><button onclick="dropPiece(this,0)">Drop</button></td>
+        <td><button onclick="dropPiece(this,1)">Drop</button></td>
+        <td><button onclick="dropPiece(this,2)">Drop</button></td>
+        <td><button onclick="dropPiece(this,3)">Drop</button></td>
+        <td><button onclick="dropPiece(this,4)">Drop</button></td>
+        <td><button onclick="dropPiece(this,5)">Drop</button></td>
+        <td><button onclick="dropPiece(this,6)">Drop</button></td>
+    </tr>
+</table>
+<div id="winnerModal" class="modal" >
+    <form id="updateWinsForm" action="/update_player_wins/" method="post">
+        {% csrf_token %}
+        <p>Select the winner:</p>
+        <input type="radio" id="player1Winner" name="winner_username" value="{{ player1.username }}">
+        <label for="player1Winner">{{ player1.username }}</label><br>
+        <input type="radio" id="player2Winner" name="winner_username" value="{{ player2.username }}">
+        <label for="player2Winner">{{ player2.username }}</label><br>
+        <input type="submit" value="Submit">
+
+    </form><br><br>
+    <a href="{% url 'leaderboard' %}">Leaderboard</a>
+</div>
+<script>
+    
+    const player1Username = "{{ player1.username }}";
+    const player2Username = "{{ player2.username }}";
+    let currentPlayer = 1;
+
+    function displayCurrentPlayer() {
+        if (currentPlayer === 1) {
+            console.log(`Current Player: ${player1Username}`);
+            return player1Username;
+        } else {
+            console.log(`Current Player: ${player2Username}`);
+            return player2Username;
+        }
+    }
+
+    let gameStatus = "ongoing";
+    const grid = [
+        [0, 0, 0, 0, 0, 0, 0], // Represents the Connect Four grid
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0]
+    ];
+    function toggleWinnerModal() {
+        const winnerModal = document.getElementById('winnerModal');
+        if (gameStatus === 'ongoing') {
+            winnerModal.style.display = 'none';
+        } else {
+            winnerModal.style.display = 'block';
+        }
+    }
+
+    toggleWinnerModal();
+
+    
+    function checkWin(grid, row, col, player) {
+        // Check horizontally
+        for (let colIndex = 0; colIndex <= grid[row].length - 4; colIndex++) {
+            if (
+                grid[row][colIndex] === player && // Checks the current cell
+                grid[row][colIndex + 1] === player && // Checks the cell to the right
+                grid[row][colIndex + 2] === player && // Checks the cell two positions to the right
+                grid[row][colIndex + 3] === player // Checks the cell three positions to the right
+            ) {
+                return true; // Returns true if four consecutive tokens are found
+            }
+        }
+    
+        // Check vertically
+        for (let r = 0; r <= 2; r++) {
+            if (grid[row + r] && grid[row + r + 1] && grid[row + r + 2] && grid[row + r + 3]) {
+                if (grid[row + r][col] === player &&
+                    grid[row + r + 1][col] === player &&
+                    grid[row + r + 2][col] === player &&
+                    grid[row + r + 3][col] === player) {
+                    return true;
+                }
+            }
+        }
+    
+        // Check diagonally (down-right)
+        for (let rowIndex = 0; rowIndex <= grid.length - 4; rowIndex++) {
+            for (let colIndex = 0; colIndex <= grid[rowIndex].length - 4; colIndex++) {
+                if (
+                    grid[rowIndex][colIndex] === player && // Checks the current cell
+                    grid[rowIndex + 1][colIndex + 1] === player && // Checks the cell diagonally down-right
+                    grid[rowIndex + 2][colIndex + 2] === player && // Checks the cell two positions diagonally down-right
+                    grid[rowIndex + 3][colIndex + 3] === player // Checks the cell three positions diagonally down-right
+                ) {
+                    return true; // Returns true if four consecutive tokens are found
+                }
+            }
+        }
+    
+        // Check diagonally (down-left)
+        // Check diagonally (up-right)
+        for (let r = 3; r < 6; r++) {
+            for (let c = 0; c < 4; c++) {
+        // Check if the cells being accessed are within the grid bounds
+                if (grid[r][c] === player &&
+                    grid[r - 1][c + 1] === player &&
+                    grid[r - 2][c + 2] === player &&
+                    grid[r - 3][c + 3] === player) {
+                    return true;
+        }
+    }
+}
+
+    
+        return false;
+    }
+    
+    // Function to check for a tie
+    function checkTie(grid) {
+        for (let row = 0; row < 6; row++) {
+            for (let col = 0; col < 7; col++) {
+                if (grid[row][col] === 0) {
+                    return false; // If any cell is empty, it's not a tie yet
+                }
+            }
+        }
+        return true; // If all cells are filled, it's a tie
+    }
+
+    function dropPiece(button, col) {
+        if (gameStatus === "ongoing") {
+            for (let row = 5; row >= 0; row--) {
+                if (grid[row][col] === 0) {
+                    grid[row][col] = currentPlayer;
+                    updateGrid();
+                    if (checkWin(grid, row, col, currentPlayer)) {
+                        const winnerUsername = currentPlayer === 1 ? player1Username : player2Username ;
+                        gameStatus = winnerUsername;
+                        document.getElementById('gameStatus').innerText = gameStatus + " wins!";
+                        document.getElementById('winnerModal').style.display = 'block';
+                    } else if (checkTie(grid)) {
+                        gameStatus = "It's a tie!";
+                        document.getElementById('gameStatus').innerText = gameStatus;
+                    } else {
+                        currentPlayer = currentPlayer === 1 ? 2 : 1;
+                        document.getElementById('turn').innerText = `Player ${currentPlayer}'s Turn`;
+                        displayCurrentPlayer();
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    function updateGrid() {
+        const table = document.getElementById('connectFourGrid');
+        for (let row = 0; row < 6; row++) {
+            for (let col = 0; col < 7; col++) {
+                const cell = table.rows[row].cells[col];
+                if (grid[row][col] === 1) {
+                    cell.innerHTML = "<div style='background-color: red; width: 100%; height: 100%; border-radius: 50%;'></div>";
+                } else if (grid[row][col] === 2) {
+                    cell.innerHTML = "<div style='background-color: yellow; width: 100%; height: 100%; border-radius: 50%;'></div>";
+                } else {
+                    cell.innerHTML = `<button onclick="dropPiece(this, ${col})">Drop</button>`;
+                }
+            }
+        }
+    }
+
+    document.getElementById('updateWinsForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Get the selected winner's username
+        const winnerUsername = document.querySelector('input[name="winner_username"]:checked').value;
+
+        // Check if a winner is selected
+        if (winnerUsername) {
+            // Submit the form to the server with the selected winner's username
+            const formData = new FormData();
+            formData.append('winner_username', winnerUsername);
+
+            fetch('/update_player_wins/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token in the request headers
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Display a success notification
+                    const notification = document.createElement('div');
+                    notification.className = 'success-notification';
+                    notification.textContent = "Player's wins updated successfully.";
+                    document.body.appendChild(notification);
+    
+                    // Remove the notification after a certain duration
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 3000);
+                } else {
+                    // Display an error notification
+                    const notification = document.createElement('div');
+                    notification.className = 'error-notification';
+                    notification.textContent = 'Failed to update player wins.';
+                    document.body.appendChild(notification);
+    
+                    // Remove the notification after a certain duration
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+            });
+        } else {
+            // If no winner is selected, display an error message or handle it as needed
+            console.error('Please select a winner.');
+        }
+    });
+
+</script>
+
+</body>
+</html>
